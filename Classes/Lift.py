@@ -83,6 +83,7 @@ class Lift:
     def empty(self):
         emptyTime = 4 # Time for one person to leave the lift
         print('current floor',self.curr_floor)
+        print('queue',self.queue)
         # Haal de verdieping nummers uit alle mensen die in de lift zitten.
         destinations = [person.destinationFloor for person in self.riders]
         ret = []
