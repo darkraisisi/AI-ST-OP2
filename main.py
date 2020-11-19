@@ -3,9 +3,10 @@ from Classes.Group import Group
 from Classes.Lift import Lift
 import simpy
 
+# We definieren het totaal aantal verdiepingen in de simulatie
 totalFloors = 6 + 1
+# GroundLevel is de begane grond in onze simulatie, deze stellen we gelijk aan 1
 groundLevel = 1
-
 
 class EV:
 
@@ -15,10 +16,12 @@ class EV:
         self.floors = self.populateFloors()
         self.leeg()
 
-
+    # Met populate floors zetten we een bepaald aantal mensen op een bepaalde verdieping.
+    # deze mensen willen gebruik gaan maken van de lift.
     def populateFloors(self):
         floors = {}
         for floorNr in range(groundLevel, totalFloors):
+            # We populeren elke verdieping van de simulatie met een groep van 10 personen.
             floors.update({floorNr :Group(10, floorNr, totalFloors)})
         return floors
 
