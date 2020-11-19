@@ -2,6 +2,7 @@ from Classes.Person import Person
 from Classes.Group import Group
 
 MAX_ELEVATOR_SIZE = 6
+
 # Een lift Classe die aangemaakt kan worden, deze is zo opgezet dat hij zijn eigen wachtwij van vloeren heeft en alle mensen als input krijgt.
 # Dit is belangrijk als je een gebouw wilt simuleren met meerdere liften die dezelde mensen probeert op te halen. 
 class Lift:
@@ -14,6 +15,9 @@ class Lift:
         self.curr_floor = groundLevel # De lift start in het begin van de simulatie op de beganegrond.
         self.queue = [] # Een wachtrij van de vloeren waar de lift naartoe moet in volgorde.
         self.totalFloors = totalFloors # Het totale aantal verdiepingen.
+        self.boardTime = 5
+        self.emptyTime = 4
+        self.moveTime = 30
 
 
     def addPerson(self,person):
@@ -47,7 +51,6 @@ class Lift:
 
     def fillLift(self,group:Group) -> int:
         # Vul de lift tot deze vol zit en initieer het maken van de nieuwe queue
-        boardTime = 5
         x = self.max - len(self.riders) # Hoe veel mensen passen er nog in de lift.
         people = Group.getWaiting(group,x) # Haal x aantal mensen uit de groep mensen die staat te wachten.
         self.addPerson(people) # Voeg de mensen die in de lift kunnen toe aan de lift.
@@ -57,11 +60,10 @@ class Lift:
         print('Allowed to entering',x)
         print(f'people got in {len(people)} ')
         print('queue',self.queue)
-        return len(people) * boardTime
+        return len(people) * self.boardTime
 
     def move(self):
         # Deze functie simuleert het het verplaatsen naar de volgende verdieping in de wachtrij.
-        moveTime = 30 # Tijd die het verplaatsen naar een andere verdieping kost.
 
         if len(self.queue) == 0: # Als de wachtrij leeg is volg een alternatieve wachtrij.
             if self.curr_floor == self.totalFloors-1: # als je helemaal bovenaan bent.
@@ -71,17 +73,16 @@ class Lift:
 
             # Als de queue leeg is 
             self.queue = range(self.curr_floor+1,self.totalFloors)
-            diff = abs(self.curr_floor - self.queue[0])*moveTime
+            diff = abs(self.curr_floor - self.queue[0])*self.moveTime
             self.curr_floor = self.queue[0]
             return True, diff
         else:
-            diff = abs(self.curr_floor - self.queue[0])*moveTime
+            diff = abs(self.curr_floor - self.queue[0])*self.moveTime
             self.curr_floor = self.queue[0]
             return True, diff
 
 
     def empty(self):
-        emptyTime = 4 # Time for one person to leave the lift
         print('current floor',self.curr_floor)
         print('queue',self.queue)
         # Haal de verdieping nummers uit alle mensen die in de lift zitten.
@@ -95,8 +96,10 @@ class Lift:
                 self.riders[index] = None
                 destinations[index] = None
 
+        # Haal alle none's uit de lijst.
+        # Dit is nodig omdat je niet dingen kan verwijderen uit een lisjt waar je over itereerd.
         self.riders = [i for i in self.riders if i]
         destinations = [i for i in destinations if i]
 
-        time = len(ret)*emptyTime
+        time = len(ret)*self.emptyTime
         return ret, time
