@@ -1,24 +1,6 @@
-# Planning
-Brainstorm over de voorwaardes van het model.
-Model omschrijven.
-Taal definieren.
-Alle mogelijke states bedenken.
-
-Userstories bedenken.
-Tasks maken en verdelen.
-
-# Model
-Tijd:
-    Intervallen van echte tijd.
-Staat:
-    Simpy
-Invoer:
-    Start waardes: Aantal mensen, max mensen per lift, aantal verdiepingen, (eventueel: snelheide van deuren/reistijd tussen verdiepingen)
+# Userstories
+<a href="https://hogeschoolutrecht-my.sharepoint.com/:w:/g/personal/david_demmers_student_hu_nl/ETBzzn3sm8NLhltRqmO-FSwBbP5qBNRnrVFFkmnFURKkKg?e=I5sdFH">Online file</a> 
 
 # Brainstorm
-Nood/Stopknop
-
-Uitbreidingen:
-    Mensen die instappen op andere verdiepingen.
-    Verschil in tijd als je afstand moet houden (social distancing)
-    
+Zie de mindmap `Agent-based Voting Simulation (Model).xmind`
+Open dit met het volgende <a href='https://www.xmind.net/'>programma</a>.
