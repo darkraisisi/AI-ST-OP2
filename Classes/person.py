@@ -1,12 +1,14 @@
 from random import uniform
 from abc import ABC, abstractmethod
 import numpy as np
+from mesa import Agent, Model
 
-class Person:
+class Person(Agent):
     """
         Main class that houses most of a persons logic, like political views 
     """
-    def __init__(self, position=None):
+    def __init__(self, unique_id, model, position=None):
+        super().__init__(unique_id, model)
         if position:
             # values between -1 & 1, 0 is exactly in the middle of the spectrum.
             self.position = position 
@@ -15,13 +17,13 @@ class Person:
 
     
     def generatePosition(self) -> [float, float]:
-        return np.array([uniform(-1, 1), uniform(-1, 1)])
+        return np.array([uniform(-10, 10), uniform(-10, 10)])
 
 
 class Candidate(Person):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
         self.amountVotes = 0
 
 
@@ -33,17 +35,20 @@ class Candidate(Person):
 
 class Voter(Person):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
     
 
     def castVote(self):
         pass
 
+    def step(self):
+        pass
+
 
 class HonestVoter(Voter):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
     
     @abstractmethod
     def castVote(self,candidates:list):
@@ -58,13 +63,17 @@ class HonestVoter(Voter):
                 runnerUp = distance
 
         finalCandidate.addVotes(1)
+    
+    @abstractmethod
+    def step(self,model):
+        self.castVote(model.candidates)
 
 
 
 
 class StrategicVoter(Voter):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
     
     @abstractmethod
     def castVote(self):
