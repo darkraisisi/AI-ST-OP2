@@ -48,9 +48,10 @@ class Voter(Person):
 
 
 class HonestVoter(Voter):
+    # a honest voter is a person who does not apply any startegy when voting
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
-
+    # Methods that define the behavior of a honest voter in a Plurality voting system.
     @abstractmethod
     def distanceCandidates(self, candidates:list):
         'Calculating the distance between voters and candidate'
@@ -80,10 +81,11 @@ class HonestVoter(Voter):
 
 
 class StrategicVoter(Voter):
+    # This class represent a strategic voter in a Plurality aand a approval voting systems. Based on the voting systems, a strategic voter will implement certain methods(strategy)in order to cast its vote. 
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
     
-    
+    #The behavior of a stratgic voter in a Plurality voting system.
     @abstractmethod
     def distanceCandidates(self, candidates:list):
         'Calculating the distance between voters and candidate'
@@ -97,7 +99,7 @@ class StrategicVoter(Voter):
     def castVote(self, distCand:dict, resultPoll:dict): #TODO define function in Model.py to get the result of a poll
         finalCandidate = None
         runnerUp =  0
-
+        #making a first cg=hoice based on the candidate wiith the highest chance of winning
         for i in resultPoll.keys:
             if resultPoll.get(i) > runnerUp:
                 finalCandidate = i
@@ -107,7 +109,8 @@ class StrategicVoter(Voter):
         results =  sorted(resultPoll.values())
         for i in distCand.keys:
             if distCand.get(i) < distCand.get(finalCandidate):
-                if results.index(resultPoll.get(i))!= -1:
+                if results.index(resultPoll.get(i))!= -1: # if the candidates does not have the least chance of winnig the election.
+                    #We vote for that candidate
                     finalCandidate = i
                     runnerUp = resultPoll.get(i)
         

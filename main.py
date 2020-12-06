@@ -30,6 +30,8 @@ if __name__ == "__main__":
     server.port = 8521
     server.launch()
 
+    
+
     # total = 0
     # for i, can in enumerate(candidates): # See the final score and actual candidate position
     #     print(i,can.amountVotes,can.position)
