@@ -15,7 +15,6 @@ class VoterModel(Model):
 
         # Test of plurality voting
         self.candidates = []
-<<<<<<< HEAD
         for i in range(n_candidates): # Get some candidates
             c = Candidate(i,self,[width,height])
             self.candidates.append(c)
@@ -23,18 +22,9 @@ class VoterModel(Model):
             self.schedule.add(c)
         for i in range(n_voters): # Get some voters
             a = HonestVoter(n_candidates + i, self,[width,height])
-            self.schedule.add(a)
-            self.space.place_agent(a,(a.position[0],a.position[1]))
-=======
-        for i in range(3): # Get some candidates
-            self.candidates.append(Candidate(i,self))
-        for i in range(10000): # Get some voters
-            a = HonestVoter(i, self)
             self.voters.append(a)
             self.schedule.add(a)
-            self.grid.place_agent(a,(a.position[0],a.position[1]))
-    
->>>>>>> 5bd686878a38dd6bcd1035b252284e3c69fbb161
+            self.space.place_agent(a,(a.position[0],a.position[1]))
         
     def poll(self, n):
         """
