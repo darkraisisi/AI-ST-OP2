@@ -23,6 +23,10 @@ class Person(Agent):
         return np.array([uniform(widthL, widthR), uniform(heightB, heightT)])
 
 
+    def step(self):
+        pass
+
+
 class Candidate(Person):
 
     def __init__(self, unique_id, model, limit, position=None):
@@ -48,9 +52,6 @@ class Voter(Person):
         pass
     def castVote(self):
         pass
-    
-    def step(self):
-        pass
 
 
 class HonestVoter(Voter):
@@ -72,7 +73,7 @@ class HonestVoter(Voter):
         finalCandidate = None
         runnerUp =100
 
-        for cand, distance in distCand.items:
+        for cand, distance in distCand.items():
             if distance < runnerUp:
                 finalCandidate = cand
                 runnerUp = distance
@@ -80,8 +81,9 @@ class HonestVoter(Voter):
         finalCandidate.addVotes(1)
     
     @abstractmethod
-    def step(self,model):
-        self.castVote(model.candidates)
+    def step(self):
+        dist = self.distanceCandidates(self.model.candidates)
+        self.castVote(dist)
 
 
 
@@ -125,5 +127,7 @@ class StrategicVoter(Voter):
 
 
     @abstractmethod
-    def step(self,model):
-        self.castVote(model.candidates)
+    def step(self):
+        dist = self.distanceCandidates(self.model.candidates)
+        poll = None
+        self.castVote(dist, poll)

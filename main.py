@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     grid = SimpleCanvas(agent_portrayal, 500, 500) # 500, 500 canvas display size
 
-    server = ModularServer(VoterModel, [grid], "Money Model", model_params)
+    server = ModularServer(VoterModel, [grid], "Voter Model", model_params)
     server.port = 8521
     server.launch()
 

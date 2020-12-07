@@ -3,7 +3,7 @@ from mesa.space import ContinuousSpace
 from mesa.time import RandomActivation
 
 
-from Classes.person import Person, Voter, HonestVoter, StrategicVoter, Candidate
+from Classes.Person import Person, Voter, HonestVoter, StrategicVoter, Candidate
 
 class VoterModel(Model):
     def __init__(self, n_voters, n_candidates, width, height):
