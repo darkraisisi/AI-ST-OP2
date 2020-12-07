@@ -7,25 +7,27 @@ class Person(Agent):
     """
         Main class that houses most of a persons logic, like political views 
     """
-    def __init__(self, unique_id, model, position=None):
+    def __init__(self, unique_id, model, limit, position=None):
         super().__init__(unique_id, model)
+        self.isCandidate = False
         if position:
             # values between -1 & 1, 0 is exactly in the middle of the spectrum.
             self.position = position 
         else:
-            self.position = self.generatePosition()
+            self.position = self.generatePosition(limit)
 
     
-    def generatePosition(self) -> [float, float]:
-        return np.array([uniform(-10, 10), uniform(-10, 10)])
+    def generatePosition(self, limit) -> [float, float]:
+        widthL, widthR, heightT, heightB = limit[0]/2*-1, limit[0]/2, limit[1]/2*-1, limit[1]/2
+        return np.array([uniform(widthL, widthR), uniform(heightB, heightT)])
 
 
 class Candidate(Person):
 
-    def __init__(self, unique_id, model):
-        super().__init__(unique_id, model)
+    def __init__(self, unique_id, model, limit, position=None):
+        super().__init__(unique_id, model, limit, position=None)
         self.amountVotes = 0
-
+        self.isCandidate = True
 
     def addVotes(self, n:int) -> int:
         self.amountVotes += n
@@ -35,8 +37,8 @@ class Candidate(Person):
 
 class Voter(Person):
 
-    def __init__(self, unique_id, model):
-        super().__init__(unique_id, model)
+    def __init__(self, unique_id, model, limit, position=None):
+        super().__init__(unique_id, model, limit, position=None)
     
     def distanceCandidates(self): # calculating the distance between the voter and the candidate
         pass
@@ -49,8 +51,8 @@ class Voter(Person):
 
 class HonestVoter(Voter):
     # a honest voter is a person who does not apply any startegy when voting
-    def __init__(self, unique_id, model):
-        super().__init__(unique_id, model)
+    def __init__(self, unique_id, model, limit, position=None):
+        super().__init__(unique_id, model, limit, position=None)
     # Methods that define the behavior of a honest voter in a Plurality voting system.
     @abstractmethod
     def distanceCandidates(self, candidates:list):
@@ -82,8 +84,8 @@ class HonestVoter(Voter):
 
 class StrategicVoter(Voter):
     # This class represent a strategic voter in a Plurality aand a approval voting systems. Based on the voting systems, a strategic voter will implement certain methods(strategy)in order to cast its vote. 
-    def __init__(self, unique_id, model):
-        super().__init__(unique_id, model)
+    def __init__(self, unique_id, model, limit, position=None):
+        super().__init__(unique_id, model, limit, position=None)
     
     #The behavior of a stratgic voter in a Plurality voting system.
     @abstractmethod
@@ -119,5 +121,5 @@ class StrategicVoter(Voter):
 
 
     @abstractmethod
-    def step(self):
+    def step(self,model):
         self.castVote(model.candidates)
