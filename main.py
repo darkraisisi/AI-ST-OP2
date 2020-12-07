@@ -15,13 +15,13 @@ def agent_portrayal(agent):
     portrayal = {"Shape": "circle", "Filled": "true", "r": 0.5,"Color":"red"}
 
     if agent.isCandidate:
-        portrayal["Color"] = "green"
+        portrayal["Color"] = agent.color
         portrayal["Layer"] = 2
-        portrayal["r"] = 2
+        portrayal["r"] = 3
     else:
-        portrayal["Color"] = "red"
+        portrayal["Color"] = agent.color
         portrayal["Layer"] = 1
-        portrayal["r"] = 0.5
+        portrayal["r"] = 1
     return portrayal
 
 if __name__ == "__main__":

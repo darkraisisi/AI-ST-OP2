@@ -11,6 +11,8 @@ class Person(Agent):
     def __init__(self, unique_id, model, limit, position=None):
         super().__init__(unique_id, model)
         self.isCandidate = False
+        self.color = None
+
         if position:
             # values between -1 & 1, 0 is exactly in the middle of the spectrum.
             self.position = position 
@@ -33,11 +35,14 @@ class Candidate(Person):
         super().__init__(unique_id, model, limit, position=None)
         self.amountVotes = 0
         self.isCandidate = True
+        self.color = f"rgba({abs(self.position[0]*255)},{self.position[1]*255},{((self.position[0]) + self.position[1]) * 225 },1)"
+
 
     def addVotes(self, n:int) -> int:
         self.amountVotes += n
         return self.amountVotes
     
+
     def cleanVotes(self):
         self.amountVotes = 0
 
@@ -77,7 +82,8 @@ class HonestVoter(Voter):
             if distance < runnerUp:
                 finalCandidate = cand
                 runnerUp = distance
-
+                
+        self.color = finalCandidate.color
         finalCandidate.addVotes(1)
     
     @abstractmethod
@@ -121,7 +127,8 @@ class StrategicVoter(Voter):
                     #We vote for that candidate
                     finalCandidate = i
                     runnerUp = resultPoll.get(i)
-        
+
+        self.color = finalCandidate.color
         finalCandidate.addVotes(1) # cast vote 
 
 
