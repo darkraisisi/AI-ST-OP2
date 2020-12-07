@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 from mesa import Agent, Model
 
+
 class Person(Agent):
     """
         Main class that houses most of a persons logic, like political views 
@@ -30,6 +31,9 @@ class Candidate(Person):
     def addVotes(self, n:int) -> int:
         self.amountVotes += n
         return self.amountVotes
+    
+    def cleanVotes(self):
+        self.amountVotes = 0
 
     
 
@@ -97,9 +101,9 @@ class StrategicVoter(Voter):
 
     @abstractmethod
     def castVote(self, distCand:dict, resultPoll:dict): #TODO define function in Model.py to get the result of a poll
-        finalCandidate = None
-        runnerUp =  0
-        #making a first cg=hoice based on the candidate wiith the highest chance of winning
+        finalCandidate = None # Candidate that the voter is going to vote for.
+        runnerUp =  0 # kans van de finalCandidate 
+        #making a first choice based on the candidate wiith the highest chance of winning
         for i in resultPoll.keys:
             if resultPoll.get(i) > runnerUp:
                 finalCandidate = i
