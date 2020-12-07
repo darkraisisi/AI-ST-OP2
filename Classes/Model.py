@@ -2,7 +2,8 @@ from mesa import Agent, Model
 from mesa.space import ContinuousSpace
 from mesa.time import RandomActivation
 
-from Classes.Person import Person, Voter, HonestVoter, StrategicVoter, Candidate
+
+from Classes.person import Person, Voter, HonestVoter, StrategicVoter, Candidate
 
 class VoterModel(Model):
     def __init__(self, n_voters, n_candidates, width, height):
@@ -10,9 +11,11 @@ class VoterModel(Model):
         self.space = ContinuousSpace(width, height, True)
         self.schedule = RandomActivation(self)
         self.running = True
+        self.voters = []
 
         # Test of plurality voting
         self.candidates = []
+<<<<<<< HEAD
         for i in range(n_candidates): # Get some candidates
             c = Candidate(i,self,[width,height])
             self.candidates.append(c)
@@ -22,10 +25,42 @@ class VoterModel(Model):
             a = HonestVoter(n_candidates + i, self,[width,height])
             self.schedule.add(a)
             self.space.place_agent(a,(a.position[0],a.position[1]))
+=======
+        for i in range(3): # Get some candidates
+            self.candidates.append(Candidate(i,self))
+        for i in range(10000): # Get some voters
+            a = HonestVoter(i, self)
+            self.voters.append(a)
+            self.schedule.add(a)
+            self.grid.place_agent(a,(a.position[0],a.position[1]))
+    
+>>>>>>> 5bd686878a38dd6bcd1035b252284e3c69fbb161
         
+    def poll(self, n):
+        """
+        gebruikt de resultaten van de huidige  poll in de volgende poll.
+        :param n: huidie poll 3 TODO aanpasssen
+        """
+        resultPoll  = {}
+        if n ==1:# eerste poll
+            for i in self.voters:
+                voter = HonestVoter(i, self, i.position) # create aantal Honestvoters
+                distCand= voter.distanceCandidates(self.candidates)
+                voter.castVote(distCand)
+            for cand in self.candidates:
+                resultPoll[cand] = cand.amountVotes 
+            return resultPoll    
+        else: # niet de eerste poll
+            dist= self.voters.distanceCandidates(candidates)
+            self.voters.castVote(dist, candidates.amountVotes)
+            for cand in self.candidates:
+                resultPoll[cand] = cand.amountVotes
+            return resultPoll
+
         
     def step(self):
         self.schedule.step()
+
         
 
         # for vot in voters: # Make all the voters vote
