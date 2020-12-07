@@ -29,7 +29,7 @@ class VoterModel(Model):
     def poll(self, n):
         """
         gebruikt de resultaten van de huidige  poll in de volgende poll.
-        :param n: huidie poll 3 TODO aanpasssen
+        :param n: huidie poll  TODO aanpasssen
         """
         resultPoll  = {}
         if n ==1:# eerste poll

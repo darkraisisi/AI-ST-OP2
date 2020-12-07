@@ -43,10 +43,3 @@ if __name__ == "__main__":
     data_br= batch_run(10, 3, 2, 10)
     print(data_br)
     
-
-    # total = 0
-    # for i, can in enumerate(candidates): # See the final score and actual candidate position
-    #     print(i,can.amountVotes,can.position)
-    #     total += can.amountVotes
-
-    # print(total)
