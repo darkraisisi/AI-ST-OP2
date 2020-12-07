@@ -9,6 +9,7 @@ from Classes.ContinuousCanvas import SimpleCanvas
 
 from Classes.Person import Person, Voter, HonestVoter, StrategicVoter, Candidate
 from Classes.Model import VoterModel
+from Classes.Batch_run import batch_run
 
 def agent_portrayal(agent):
     portrayal = {"Shape": "circle", "Filled": "true", "r": 0.5,"Color":"red"}
@@ -38,6 +39,9 @@ if __name__ == "__main__":
     server.port = 8521
     server.launch()
 
+    # Batch run 
+    data_br= batch_run(10, 3, 2, 10)
+    print(data_br)
     
 
     # total = 0

@@ -10,7 +10,7 @@ class VoterModel(Model):
         self.num_agents = n_voters
         self.space = ContinuousSpace(width, height, True)
         self.schedule = RandomActivation(self)
-        self.running = True
+        self.running = True # model blijft runnen
         self.voters = []
 
         # Test of plurality voting
@@ -47,7 +47,7 @@ class VoterModel(Model):
                 resultPoll[cand] = cand.amountVotes
             return resultPoll
 
-        
+
     def step(self):
         self.schedule.step()
 
