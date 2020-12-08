@@ -1,9 +1,17 @@
 from mesa import Agent, Model
 from mesa.space import ContinuousSpace
 from mesa.time import RandomActivation
+from mesa.datacollection import DataCollector
 
 
 from Classes.Person import Person, Voter, HonestVoter, StrategicVoter, Candidate
+
+def compute_gini(model):
+    candvotes = [Candidate.amountVotes for agent in model.schedule.agents]
+    X = sorted(candvotes)
+    N = model.num_agents
+    B = sum(xi * (N - i) for i, xi in enumerate(X)) / (N * sum(X))
+    return 1 + (1 / N) - 2 * B
 
 class VoterModel(Model):
     def __init__(self, n_voters, n_candidates, width, height):
@@ -12,6 +20,9 @@ class VoterModel(Model):
         self.schedule = RandomActivation(self)
         self.running = True # model blijft runnen
         self.voters = []
+        self.dc = DataCollector(model_reporters={"agent_count":
+        lambda m: m.schedule.get_agent_count()},
+        agent_reporters={"name": lambda a: a.name}) 
 
         # Test of plurality voting
         self.candidates = []

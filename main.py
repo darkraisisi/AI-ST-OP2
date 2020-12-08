@@ -34,10 +34,17 @@ if __name__ == "__main__":
     }
 
     grid = SimpleCanvas(agent_portrayal, 500, 500) # 500, 500 canvas display size
-
-    server = ModularServer(VoterModel, [grid], "Voter Model", model_params)
+    chart = ChartModule([{"Label": "Gini",
+    "Color": "Black"}],
+    data_collector_name='datacollector')
+    
+    server = ModularServer(VoterModel, [grid, chart], "Voter Model", model_params)
     server.port = 8521
     server.launch()
+    # server = ModularServer(VoterModel, [grid], "Voter Model", model_params)
+    # server.port = 8521
+    # server.launch()
+
 
     # Batch run 
     data_br= batch_run(10, 3, 2, 10)
