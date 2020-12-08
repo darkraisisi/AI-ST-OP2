@@ -1,17 +1,21 @@
 from mesa import Agent, Model
 from mesa.space import ContinuousSpace
 from mesa.time import RandomActivation
+from mesa.datacollection import DataCollector
 
 
 from Classes.Person import Person, Voter, HonestVoter, StrategicVoter, Candidate
 
 class VoterModel(Model):
-    def __init__(self, n_voters, n_candidates, width, height):
+    def __init__(self, n_voters, n_candidates, width, height,maxpolls = 6):
         self.num_agents = n_voters
         self.space = ContinuousSpace(width, height, True)
         self.schedule = RandomActivation(self)
         self.running = True # model blijft runnen
         self.voters = []
+        self.maxpolls = maxpolls
+        self.currentpoll = 0
+
 
         # Test of plurality voting
         self.candidates = []
@@ -26,29 +30,44 @@ class VoterModel(Model):
             self.schedule.add(a)
             self.space.place_agent(a,(a.position[0],a.position[1]))
         
-    def poll(self, n):
+        # TODO datacollector aanpassen voor het tekenen van de grafiekk in de simulaatie 
+        self.datacollector  = DataCollector(
+            #model_reporters  = {"resultPoll": self.poll.values},
+            agent_reporters   = {"Votes":  Voter.castVote})
+        # for i  in self.candidates:
+        #     self.datacollector.model_reporters.update({"Cand {}".format(i.unique_id): i.amountVotes})
+        #     print(self.datacollector.get_model_vars_dataframe)
+
+    def getAllVotes(self):
+        return [i.amountVotes for i in self.candidates]
+        
+    def poll(self):
         """
         gebruikt de resultaten van de huidige  poll in de volgende poll.
         :param n: huidie poll  TODO aanpasssen
         """
         resultPoll  = {}
-        if n ==1:# eerste poll
+        if self.currentpoll ==1:# eerste poll
             for i in self.voters:
                 voter = HonestVoter(i, self, i.position) # create aantal Honestvoters
                 distCand= voter.distanceCandidates(self.candidates)
                 voter.castVote(distCand)
             for cand in self.candidates:
                 resultPoll[cand] = cand.amountVotes 
+            self.currentpoll +=1
             return resultPoll    
         else: # niet de eerste poll
-            dist= self.voters.distanceCandidates(candidates)
-            self.voters.castVote(dist, candidates.amountVotes)
+            dist= [voter.distanceCandidates(self.candidates)  for  voter  in self.voters]
+            map(Voter.castVote(self.candidates), self.voters)
             for cand in self.candidates:
                 resultPoll[cand] = cand.amountVotes
+            self.currentpoll+=1
             return resultPoll
-
-
+        
+    
+    
     def step(self):
+        self.datacollector.collect(self)
         self.schedule.step()
 
         

@@ -1,5 +1,5 @@
 from mesa.batchrunner import BatchRunner
-from Classes.Model import  VoterModel
+from  Classes.Model import  VoterModel
 from Classes.Person import Person, Voter, HonestVoter, StrategicVoter, Candidate
 
 def batch_run(nvoters, ncandidates,  iterations, max_nsteps):
@@ -21,8 +21,12 @@ def batch_run(nvoters, ncandidates,  iterations, max_nsteps):
         fixed_params,
         iterations = iterations,
         max_steps = max_nsteps,
-        #model_reporters  = {"resultPoll": VoterModel.poll()},
-        #agent_reporters   = {"Votes": Voter.castVote}
+        model_reporters  = {"resultPoll": VoterModel.poll,
+                            "Cand1":  VoterModel.getAllVotes[0],
+                            "Cand2":VoterModel.getAllVotes[1],
+                            "Cand3":VoterModel.getAllVotes[2]
+                            },
+        agent_reporters   = {"Votes": Voter.castVote}
     )
 
     batchrun.run_all()
