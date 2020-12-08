@@ -14,14 +14,19 @@ from Classes.Batch_run import batch_run
 def agent_portrayal(agent):
     portrayal = {"Shape": "circle", "Filled": "true", "r": 0.5,"Color":"red"}
 
-    if agent.isCandidate:
+    if agent.isCandidate: # Candidate color based on its position
         portrayal["Color"] = agent.color
         portrayal["Layer"] = 2
-        portrayal["r"] = 3
+        portrayal["r"] = 4
     else:
-        portrayal["Color"] = agent.color
-        portrayal["Layer"] = 1
-        portrayal["r"] = 1
+        if agent.color: # Agents get the color of the candidate they voted for in the current poll/election
+            portrayal["Color"] = agent.color
+            portrayal["Layer"] = 1
+            portrayal["r"] = 2
+        else: # On startup
+            portrayal["Color"] = 'black'
+            portrayal["Layer"] = 1
+            portrayal["r"] = 2
     return portrayal
 
 if __name__ == "__main__":
@@ -29,17 +34,22 @@ if __name__ == "__main__":
     model_params = {
         "n_voters": UserSettableParameter( "slider", "Number of Voters", 100, 2, 1000, 5, description="Choose how many agents to include in the model"),
         "n_candidates": UserSettableParameter( "slider", "Number of Candidates", 3, 2, 12, 1, description="Choose how many agents to include in the model"),
+        "voter_type": UserSettableParameter( "choice", "Voter behavior", value="Honest",choices=["Honest","Strategic"], description="Select the voter behavior you want (All honest/ strategic)"),
         "width": size,
         "height": size,
     }
 
     grid = SimpleCanvas(agent_portrayal, 500, 500) # 500, 500 canvas display size
-
-    server = ModularServer(VoterModel, [grid], "Voter Model", model_params)
+    chart = ChartModule([{"Label": "Gini",
+    "Color": "Black"}],
+    data_collector_name='datacollector')
+    
+    server = ModularServer(VoterModel, [grid, chart], "Voter Model", model_params)
     server.port = 8521
     server.launch()
 
+
     # Batch run 
-    data_br= batch_run(10, 3, 2, 10)
+    data_br = batch_run(10, 3, 2, 10)
     print(data_br)
     
