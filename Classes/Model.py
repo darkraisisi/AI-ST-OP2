@@ -14,7 +14,7 @@ def compute_gini(model):
     return 1 + (1 / N) - 2 * B
 
 class VoterModel(Model):
-    def __init__(self, n_voters, n_candidates, voter_type, width, height):
+    def __init__(self, n_voters, n_candidates, voter_type, maxpolls, width, height):
         self.voter_type = voter_type
         self.num_agents = n_voters
         self.space = ContinuousSpace(width, height, True)
@@ -75,7 +75,7 @@ class VoterModel(Model):
             self.currentpoll +=1
             return resultPoll    
         else: # niet de eerste poll
-            dist= [voter.distanceCandidates(self.candidates)  for  voter  in self.voters]
+            dist = [voter.distanceCandidates(self.candidates)  for  voter  in self.voters]
             map(Voter.castVote(self.candidates), self.voters)
             for cand in self.candidates:
                 resultPoll[cand] = cand.amountVotes

@@ -110,17 +110,18 @@ class StrategicVoter(Voter):
 
     @abstractmethod
     def castVote(self, distCand:dict, resultPoll:dict): #TODO define function in Model.py to get the result of a poll
-        finalCandidate = None # Candidate that the voter is going to vote for.
-        runnerUp =  0 # kans van de finalCandidate 
-        #making a first choice based on the candidate wiith the highest chance of winning
-        for i in resultPoll.keys:
-            if resultPoll.get(i) > runnerUp:
-                finalCandidate = i
-                runnerUp = resultPoll.get(i)
+        finalCandidate = None
+        runnerUp = 100
+
+        for cand, distance in distCand.items():
+            if distance < runnerUp:
+                finalCandidate = cand
+                runnerUp = distance
 
         #now that we have the Candidate with highest chance of winning, we want to also consider the distance between voter and candidates.
         results =  sorted(resultPoll.values())
-        for i in distCand.keys:
+        # print(distCand)
+        for i in distCand.keys():
             if distCand.get(i) < distCand.get(finalCandidate):
                 if results.index(resultPoll.get(i))!= -1: # if the candidates does not have the least chance of winnig the election.
                     #We vote for that candidate
@@ -135,5 +136,5 @@ class StrategicVoter(Voter):
     @abstractmethod
     def step(self):
         dist = self.distanceCandidates(self.model.candidates)
-        poll = None
+        poll = self.model.poll()
         self.castVote(dist, poll)

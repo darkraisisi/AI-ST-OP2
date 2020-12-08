@@ -35,8 +35,9 @@ if __name__ == "__main__":
         "n_voters": UserSettableParameter( "slider", "Number of Voters", 100, 2, 1000, 5, description="Choose how many agents to include in the model"),
         "n_candidates": UserSettableParameter( "slider", "Number of Candidates", 3, 2, 12, 1, description="Choose how many agents to include in the model"),
         "voter_type": UserSettableParameter( "choice", "Voter behavior", value="Honest",choices=["Honest","Strategic"], description="Select the voter behavior you want (All honest/ strategic)"),
+        "maxpolls": UserSettableParameter( "slider", "Amount of polls", 4, 1, 12, 1, description="Choose how many agents to include in the model"),
         "width": size,
-        "height": size,
+        "height": size
     }
 
     grid = SimpleCanvas(agent_portrayal, 500, 500) # 500, 500 canvas display size
