@@ -14,26 +14,19 @@ def compute_gini(model):
     return 1 + (1 / N) - 2 * B
 
 class VoterModel(Model):
-<<<<<<< HEAD
-    def __init__(self, n_voters, n_candidates, width, height,maxpolls = 6):
-=======
     def __init__(self, n_voters, n_candidates, voter_type, width, height):
         self.voter_type = voter_type
->>>>>>> 040f5c1fe5f63b59d095745cdfa6fc59d93bfac9
         self.num_agents = n_voters
         self.space = ContinuousSpace(width, height, True)
         self.schedule = RandomActivation(self)
         self.running = True # model blijft runnen
         self.voters = []
-<<<<<<< HEAD
         self.maxpolls = maxpolls
         self.currentpoll = 0
 
-=======
         self.datacollector = DataCollector(model_reporters={"agent_count":
         lambda m: m.schedule.get_agent_count()},
         agent_reporters={"name": lambda a: a.name}) 
->>>>>>> 040f5c1fe5f63b59d095745cdfa6fc59d93bfac9
 
         # Test of plurality voting
         self.candidates = []
