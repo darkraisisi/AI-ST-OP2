@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 import numpy as np
 from mesa import Agent, Model
 
-
 class Person(Agent):
     """
         Main class that houses most of a persons logic, like political views 
@@ -21,7 +20,7 @@ class Person(Agent):
 
     
     def generatePosition(self, limit) -> [float, float]:
-        widthL, widthR, heightT, heightB = limit[0]/2*-1, limit[0]/2, limit[1]/2*-1, limit[1]/2
+        widthL, widthR, heightT, heightB = 0, limit[0], 0, limit[1]
         return np.array([uniform(widthL, widthR), uniform(heightB, heightT)])
 
 
@@ -35,7 +34,7 @@ class Candidate(Person):
         super().__init__(unique_id, model, limit, position=None)
         self.amountVotes = 0
         self.isCandidate = True
-        self.color = f"rgba({abs(self.position[0]*255)},{self.position[1]*255},{((self.position[0]) + self.position[1]) * 225 },1)"
+        self.color = f"rgba({abs(127.5*self.position[0])},{127.5*self.position[1]},{(127.5*((self.position[0]) + self.position[1])/2)},1)"
 
 
     def addVotes(self, n:int) -> int:
@@ -76,13 +75,13 @@ class HonestVoter(Voter):
     @abstractmethod
     def castVote(self,distCand:dict):
         finalCandidate = None
-        runnerUp =100
+        runnerUp = 100
 
         for cand, distance in distCand.items():
             if distance < runnerUp:
                 finalCandidate = cand
                 runnerUp = distance
-                
+
         self.color = finalCandidate.color
         finalCandidate.addVotes(1)
     

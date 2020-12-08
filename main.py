@@ -17,11 +17,11 @@ def agent_portrayal(agent):
     if agent.isCandidate:
         portrayal["Color"] = agent.color
         portrayal["Layer"] = 2
-        portrayal["r"] = 3
+        portrayal["r"] = 4
     else:
         portrayal["Color"] = agent.color
         portrayal["Layer"] = 1
-        portrayal["r"] = 1
+        portrayal["r"] = 2
     return portrayal
 
 if __name__ == "__main__":
@@ -41,12 +41,9 @@ if __name__ == "__main__":
     server = ModularServer(VoterModel, [grid, chart], "Voter Model", model_params)
     server.port = 8521
     server.launch()
-    # server = ModularServer(VoterModel, [grid], "Voter Model", model_params)
-    # server.port = 8521
-    # server.launch()
 
 
     # Batch run 
-    data_br= batch_run(10, 3, 2, 10)
+    data_br = batch_run(10, 3, 2, 10)
     print(data_br)
     

@@ -20,7 +20,7 @@ class VoterModel(Model):
         self.schedule = RandomActivation(self)
         self.running = True # model blijft runnen
         self.voters = []
-        self.dc = DataCollector(model_reporters={"agent_count":
+        self.datacollector = DataCollector(model_reporters={"agent_count":
         lambda m: m.schedule.get_agent_count()},
         agent_reporters={"name": lambda a: a.name}) 
 
