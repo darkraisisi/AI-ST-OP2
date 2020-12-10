@@ -123,7 +123,7 @@ class StrategicVoter(Voter):
             # print('diff',diff)
             if diff / resultPoll.get(runnerUp[0]) > self.model.loyalty: 
                 #We vote for that candidate
-                print('Chose the runnerup')
+                # print('Chose the runnerup')
                 finalCandidate = runnerUp
 
         self.color = finalCandidate[0].color

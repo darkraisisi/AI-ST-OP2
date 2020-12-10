@@ -2,17 +2,19 @@ from mesa import Agent, Model
 from mesa.space import ContinuousSpace
 from mesa.time import RandomActivation
 from mesa.datacollection import DataCollector
+from mesa.batchrunner import BatchRunner
 
 
 from Classes.Person import Person, Voter, HonestVoter, StrategicVoter, Candidate
 
-def compute_gini(model):
-    candvotes = [Candidate.amountVotes for agent in model.schedule.agents]
-    X = sorted(candvotes)
-    N = model.num_agents
-    B = sum(xi * (N - i) for i, xi in enumerate(X)) / (N * sum(X))
-    return 1 + (1 / N) - 2 * B
+def getCandidates(model):
+    md_rp = {}
+    for agent in model.schedule.agents:
+        if agent.isCandidate:
+            md_rp.update({f"cand{agent.unique_id}": agent.getVotes})
+    return md_rp
 
+   
 class VoterModel(Model):
     def __init__(self, n_voters, n_candidates, voter_type, maxpolls, loyalty, width, height):
         self.voter_type = voter_type
@@ -26,9 +28,9 @@ class VoterModel(Model):
         self.currentPoll = None
         self.loyalty = loyalty / 100
 
-        self.datacollector = DataCollector(model_reporters={"agent_count":
-        lambda m: m.schedule.get_agent_count()},
-        agent_reporters={"name": lambda a: a.name}) 
+        # self.datacollector = DataCollector(model_reporters={"agent_count":
+        # lambda m: m.schedule.get_agent_count()},
+        # agent_reporters={"name": lambda a: a.name}) 
 
         # Test of plurality voting
         self.candidates = []
@@ -51,15 +53,16 @@ class VoterModel(Model):
                 self.schedule.add(a)
                 self.space.place_agent(a,(a.position[0],a.position[1]))
         
-        md_rp = {}
-        for i in range(len(self.candidates)):
-            md_rp.update({f"cand{i}": self.candidates[i].getVotes})
+        # md_rp = {}
+        # for i in range(len(self.candidates)):
+        #     md_rp.update({f"cand{i}": self.candidates[i].getVotes})
 
-        md_rp.update({"Total": self.getAllVotes})
+        # md_rp.update({"Total": self.getAllVotes})
 
         self.datacollector  = DataCollector(
-            model_reporters = md_rp
+            model_reporters = getCandidates(self)
         )
+        
 
     def getAllVotes(self):
         return [i.amountVotes for i in self.candidates]
@@ -101,7 +104,7 @@ class VoterModel(Model):
                 resultPoll.update({chosenCandidate: votes})
 
             return resultPoll    
-    
+
     
     def step(self):
         if self.currentPollCounter == self.maxpolls:
@@ -115,3 +118,5 @@ class VoterModel(Model):
         self.schedule.step()
         self.currentPollCounter += 1
         self.datacollector.collect(self)
+
+
