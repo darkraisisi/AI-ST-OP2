@@ -26,7 +26,7 @@ def batch_run(nvoters, ncandidates,  iterations, max_nsteps):
                             "Cand2":VoterModel.getAllVotes[1],
                             "Cand3":VoterModel.getAllVotes[2]
                             },
-        agent_reporters   = {"Votes": Voter.castVote}
+        agent_reporters   = {"Votes": Voter.choseCandidate}
     )
 
     batchrun.run_all()

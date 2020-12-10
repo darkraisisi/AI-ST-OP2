@@ -22,7 +22,9 @@ class VoterModel(Model):
         self.running = True # model blijft runnen
         self.voters = []
         self.maxpolls = maxpolls
-        self.currentpoll = 0
+        self.currentPollCounter = 0
+        self.currentPoll = None
+        self.loyalty = 0.2
 
         self.datacollector = DataCollector(model_reporters={"agent_count":
         lambda m: m.schedule.get_agent_count()},
@@ -36,6 +38,7 @@ class VoterModel(Model):
             self.space.place_agent(c,(c.position[0],c.position[1]))
             self.schedule.add(c)
         if voter_type == 'Strategic':
+            print(voter_type)
             for i in range(n_voters): # Get some voters
                 a = StrategicVoter(n_candidates + i, self,[width,height])
                 self.voters.append(a)
@@ -51,7 +54,7 @@ class VoterModel(Model):
         # TODO datacollector aanpassen voor het tekenen van de grafiekk in de simulaatie 
         self.datacollector  = DataCollector(
             #model_reporters  = {"resultPoll": self.poll.values},
-            agent_reporters   = {"Votes":  Voter.castVote})
+            agent_reporters   = {"Votes":  Voter.choseCandidate})
         # for i  in self.candidates:
         #     self.datacollector.model_reporters.update({"Cand {}".format(i.unique_id): i.amountVotes})
         #     print(self.datacollector.get_model_vars_dataframe)
@@ -65,31 +68,48 @@ class VoterModel(Model):
         :param n: huidie poll  TODO aanpasssen
         """
         resultPoll  = {}
-        if self.currentpoll ==1:# eerste poll
+        if self.currentPollCounter == 0:# eerste poll
+            print('Poll: 1st')
             for i in self.voters:
-                voter = HonestVoter(i, self, i.position) # create aantal Honestvoters
-                distCand= voter.distanceCandidates(self.candidates)
-                voter.castVote(distCand)
-            for cand in self.candidates:
-                resultPoll[cand] = cand.amountVotes 
-            self.currentpoll +=1
+                voter = HonestVoter(i, self, [], i.position) # create aantal Honestvoters
+                distCand = voter.distanceCandidates(self.candidates)
+                chosenCandidate = voter.choseCandidate(distCand)
+                
+                if resultPoll.get(chosenCandidate):
+                    # votes = resultPoll.get(chosenCandidate)
+                    # votes += 1
+                    # resultPoll.update({chosenCandidate: votes})
+                    resultPoll.update({chosenCandidate: 0})
+                else:
+                    resultPoll.update({chosenCandidate: 0})
+
             return resultPoll    
+
         else: # niet de eerste poll
-            dist = [voter.distanceCandidates(self.candidates)  for  voter  in self.voters]
-            map(Voter.castVote(self.candidates), self.voters)
-            for cand in self.candidates:
-                resultPoll[cand] = cand.amountVotes
-            self.currentpoll+=1
-            return resultPoll
-        
+            # print('Poll: n\'d',self.currentPollCounter+1)
+            # dist = [voter.distanceCandidates(self.candidates)  for  voter  in self.voters]
+            # map(Voter.choseCandidate(dist), self.voters)
+            # for cand in self.candidates:
+            #     resultPoll[cand] = cand.amountVotes
+
+            # return resultPoll
+            for voter in self.voters:
+                distCand = voter.distanceCandidates(self.candidates)
+                chosenCandidate = voter.choseCandidate(distCand,self.currentPoll)
+                
+                if resultPoll.get(chosenCandidate):
+                    votes = resultPoll.get(chosenCandidate)
+                    votes += 1
+                    resultPoll.update({chosenCandidate: votes})
+                else:
+                    resultPoll.update({chosenCandidate: 1})
+
+            return resultPoll    
     
     
     def step(self):
         self.datacollector.collect(self)
+        self.currentPoll = self.poll()
+        print(self.currentPoll)
         self.schedule.step()
-
-        
-
-        # for vot in voters: # Make all the voters vote
-        #     # print(vot.position)
-        #     vot.castVote(candidates)
+        self.currentPollCounter += 1

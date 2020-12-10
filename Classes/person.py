@@ -12,7 +12,7 @@ class Person(Agent):
         self.isCandidate = False
         self.color = None
 
-        if position:
+        if type(position).__module__ == np.__name__:
             # values between -1 & 1, 0 is exactly in the middle of the spectrum.
             self.position = position 
         else:
@@ -31,7 +31,7 @@ class Person(Agent):
 class Candidate(Person):
 
     def __init__(self, unique_id, model, limit, position=None):
-        super().__init__(unique_id, model, limit, position=None)
+        super().__init__(unique_id, model, limit, position)
         self.amountVotes = 0
         self.isCandidate = True
         self.color = f"rgba({abs(127.5*self.position[0])},{127.5*self.position[1]},{(127.5*((self.position[0]) + self.position[1])/2)},1)"
@@ -50,18 +50,19 @@ class Candidate(Person):
 class Voter(Person):
 
     def __init__(self, unique_id, model, limit, position=None):
-        super().__init__(unique_id, model, limit, position=None)
+        super().__init__(unique_id, model, limit, position)
     
     def distanceCandidates(self): # calculating the distance between the voter and the candidate
         pass
-    def castVote(self):
+
+    def choseCandidate(self) -> Candidate:
         pass
 
 
 class HonestVoter(Voter):
     # a honest voter is a person who does not apply any startegy when voting
     def __init__(self, unique_id, model, limit, position=None):
-        super().__init__(unique_id, model, limit, position=None)
+        super().__init__(unique_id, model, limit, position)
     # Methods that define the behavior of a honest voter in a Plurality voting system.
     @abstractmethod
     def distanceCandidates(self, candidates:list):
@@ -73,22 +74,22 @@ class HonestVoter(Voter):
         return distance
     
     @abstractmethod
-    def castVote(self,distCand:dict):
+    def choseCandidate(self,distCand:dict) -> Candidate:
         finalCandidate = None
-        runnerUp = 100
+        smallestDistance = 100
 
         for cand, distance in distCand.items():
-            if distance < runnerUp:
+            if distance < smallestDistance:
                 finalCandidate = cand
-                runnerUp = distance
+                smallestDistance = distance
 
         self.color = finalCandidate.color
-        finalCandidate.addVotes(1)
+        return finalCandidate
     
     @abstractmethod
     def step(self):
         dist = self.distanceCandidates(self.model.candidates)
-        self.castVote(dist)
+        self.choseCandidate(dist).addVotes(1)
 
 
 
@@ -96,7 +97,7 @@ class HonestVoter(Voter):
 class StrategicVoter(Voter):
     # This class represent a strategic voter in a Plurality aand a approval voting systems. Based on the voting systems, a strategic voter will implement certain methods(strategy)in order to cast its vote. 
     def __init__(self, unique_id, model, limit, position=None):
-        super().__init__(unique_id, model, limit, position=None)
+        super().__init__(unique_id, model, limit, position)
     
     #The behavior of a stratgic voter in a Plurality voting system.
     @abstractmethod
@@ -109,32 +110,26 @@ class StrategicVoter(Voter):
         return distance
 
     @abstractmethod
-    def castVote(self, distCand:dict, resultPoll:dict): #TODO define function in Model.py to get the result of a poll
-        finalCandidate = None
-        runnerUp = 100
-
-        for cand, distance in distCand.items():
-            if distance < runnerUp:
-                finalCandidate = cand
-                runnerUp = distance
+    def choseCandidate(self, distCand:dict, resultPoll:dict): #TODO define function in Model.py to get the result of a poll
+        distCand = sorted(distCand.items(), key=lambda x: x[1])
+        finalCandidate = distCand[0]
+        runnerUp = distCand[1]
 
         #now that we have the Candidate with highest chance of winning, we want to also consider the distance between voter and candidates.
-        results =  sorted(resultPoll.values())
-        # print(distCand)
-        for i in distCand.keys():
-            if distCand.get(i) < distCand.get(finalCandidate):
-                if results.index(resultPoll.get(i))!= -1: # if the candidates does not have the least chance of winnig the election.
-                    #We vote for that candidate
-                    finalCandidate = i
-                    runnerUp = resultPoll.get(i)
+        if resultPoll.get(finalCandidate[0]) < resultPoll.get(runnerUp[0]):
+            diff = resultPoll.get(runnerUp[0]) - resultPoll.get(finalCandidate[0])
+            # print('diff',diff)
+            if diff / resultPoll.get(runnerUp[0]) > self.model.loyalty: 
+                #We vote for that candidate
+                print('Chose the runnerup')
+                finalCandidate = runnerUp
 
-        self.color = finalCandidate.color
-        finalCandidate.addVotes(1) # cast vote 
+        self.color = finalCandidate[0].color
+        return finalCandidate[0]
 
 
 
     @abstractmethod
     def step(self):
         dist = self.distanceCandidates(self.model.candidates)
-        poll = self.model.poll()
-        self.castVote(dist, poll)
+        self.choseCandidate(dist, self.model.currentPoll).addVotes(1)
