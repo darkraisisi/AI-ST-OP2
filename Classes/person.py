@@ -13,7 +13,7 @@ class Person(Agent):
         self.color = None
 
         if type(position).__module__ == np.__name__:
-            # values between -1 & 1, 0 is exactly in the middle of the spectrum.
+            # values between 0 & 2, 1 is exactly in the middle of the spectrum.
             self.position = position 
         else:
             self.position = self.generatePosition(limit)
@@ -45,6 +45,8 @@ class Candidate(Person):
     def cleanVotes(self):
         self.amountVotes = 0
 
+    def getVotes(self):
+        return self.amountVotes
     
 
 class Voter(Person):

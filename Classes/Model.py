@@ -14,7 +14,7 @@ def compute_gini(model):
     return 1 + (1 / N) - 2 * B
 
 class VoterModel(Model):
-    def __init__(self, n_voters, n_candidates, voter_type, maxpolls, width, height):
+    def __init__(self, n_voters, n_candidates, voter_type, maxpolls, loyalty, width, height):
         self.voter_type = voter_type
         self.num_agents = n_voters
         self.space = ContinuousSpace(width, height, True)
@@ -24,7 +24,7 @@ class VoterModel(Model):
         self.maxpolls = maxpolls
         self.currentPollCounter = 0
         self.currentPoll = None
-        self.loyalty = 0.2
+        self.loyalty = loyalty / 100
 
         self.datacollector = DataCollector(model_reporters={"agent_count":
         lambda m: m.schedule.get_agent_count()},
@@ -51,13 +51,15 @@ class VoterModel(Model):
                 self.schedule.add(a)
                 self.space.place_agent(a,(a.position[0],a.position[1]))
         
-        # TODO datacollector aanpassen voor het tekenen van de grafiekk in de simulaatie 
+        md_rp = {}
+        for i in range(len(self.candidates)):
+            md_rp.update({f"cand{i}": self.candidates[i].getVotes})
+
+        md_rp.update({"Total": self.getAllVotes})
+
         self.datacollector  = DataCollector(
-            #model_reporters  = {"resultPoll": self.poll.values},
-            agent_reporters   = {"Votes":  Voter.choseCandidate})
-        # for i  in self.candidates:
-        #     self.datacollector.model_reporters.update({"Cand {}".format(i.unique_id): i.amountVotes})
-        #     print(self.datacollector.get_model_vars_dataframe)
+            model_reporters = md_rp
+        )
 
     def getAllVotes(self):
         return [i.amountVotes for i in self.candidates]
@@ -68,20 +70,15 @@ class VoterModel(Model):
         :param n: huidie poll  TODO aanpasssen
         """
         resultPoll  = {}
-        if self.currentPollCounter == 0:# eerste poll
-            print('Poll: 1st')
+        if self.currentPollCounter == 0 or self.voter_type == 'Honest':# eerste poll
+            print('Poll: 1st, or just honest')
+            for cand in self.candidates:
+                    resultPoll.update({cand: 0})
+
             for i in self.voters:
                 voter = HonestVoter(i, self, [], i.position) # create aantal Honestvoters
                 distCand = voter.distanceCandidates(self.candidates)
                 chosenCandidate = voter.choseCandidate(distCand)
-                
-                if resultPoll.get(chosenCandidate):
-                    # votes = resultPoll.get(chosenCandidate)
-                    # votes += 1
-                    # resultPoll.update({chosenCandidate: votes})
-                    resultPoll.update({chosenCandidate: 0})
-                else:
-                    resultPoll.update({chosenCandidate: 0})
 
             return resultPoll    
 
@@ -93,23 +90,28 @@ class VoterModel(Model):
             #     resultPoll[cand] = cand.amountVotes
 
             # return resultPoll
+            for cand in self.candidates:
+                    resultPoll.update({cand: 0})
+
             for voter in self.voters:
                 distCand = voter.distanceCandidates(self.candidates)
                 chosenCandidate = voter.choseCandidate(distCand,self.currentPoll)
-                
-                if resultPoll.get(chosenCandidate):
-                    votes = resultPoll.get(chosenCandidate)
-                    votes += 1
-                    resultPoll.update({chosenCandidate: votes})
-                else:
-                    resultPoll.update({chosenCandidate: 1})
+                votes = resultPoll.get(chosenCandidate)
+                votes += 1
+                resultPoll.update({chosenCandidate: votes})
 
             return resultPoll    
     
     
     def step(self):
-        self.datacollector.collect(self)
+        if self.currentPollCounter == self.maxpolls:
+            self.running = False
+            
+        for cand in self.candidates:
+            cand.cleanVotes()
+        
         self.currentPoll = self.poll()
         print(self.currentPoll)
         self.schedule.step()
         self.currentPollCounter += 1
+        self.datacollector.collect(self)

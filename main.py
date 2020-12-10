@@ -32,17 +32,17 @@ def agent_portrayal(agent):
 if __name__ == "__main__":
     size = 2
     model_params = {
-        "n_voters": UserSettableParameter( "slider", "Number of Voters", 100, 2, 1000, 5, description="Choose how many agents to include in the model"),
-        "n_candidates": UserSettableParameter( "slider", "Number of Candidates", 4, 2, 12, 1, description="Choose how many agents to include in the model"),
+        "n_voters": UserSettableParameter( "slider", "Number of Voters (n)", 100, 2, 1000, 5, description="Choose how many agents to include in the model"),
+        "n_candidates": UserSettableParameter( "slider", "Number of Candidates (n)", 4, 2, 12, 1, description="Choose how many agents to include in the model"),
         "voter_type": UserSettableParameter( "choice", "Voter behavior", value="Strategic",choices=["Honest","Strategic"], description="Select the voter behavior you want (All honest/ strategic)"),
-        "maxpolls": UserSettableParameter( "slider", "Amount of polls", 4, 1, 12, 1, description="Choose how many agents to include in the model"),
+        "maxpolls": UserSettableParameter( "slider", "Amount of polls (n)", 4, 1, 12, 1, description="Choose how many agents to include in the model"),
+        'loyalty': UserSettableParameter( "slider", "Loyalty of a voter (%)", 30, 1, 100, 1, description="Choose the percentage more a second choice has got to have before a voter changes its vote"),
         "width": size,
         "height": size
     }
 
     grid = SimpleCanvas(agent_portrayal, 500, 500) # 500, 500 canvas display size
-    chart = ChartModule([{"Label": "Gini",
-    "Color": "Black"}],
+    chart = ChartModule([{"Label": "Total","Color": "Black"},{"Label": "cand0","Color": "Red"},{"Label": "cand1","Color": "Green"},{"Label": "cand2","Color": "Blue"},{"Label": "cand3","Color": "Yellow"}],
     data_collector_name='datacollector')
     
     server = ModularServer(VoterModel, [grid, chart], "Voter Model", model_params)
