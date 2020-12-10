@@ -14,6 +14,9 @@ def getCandidates(model):
             md_rp.update({f"cand{agent.unique_id}": agent.getVotes})
     return md_rp
 
+def getPoll(model):
+    return model.poll_lst
+
    
 class VoterModel(Model):
     def __init__(self, n_voters, n_candidates, voter_type, maxpolls, loyalty, width, height):
@@ -27,6 +30,7 @@ class VoterModel(Model):
         self.currentPollCounter = 0
         self.currentPoll = None
         self.loyalty = loyalty / 100
+        self.poll_lst = []
 
         # self.datacollector = DataCollector(model_reporters={"agent_count":
         # lambda m: m.schedule.get_agent_count()},
@@ -114,6 +118,7 @@ class VoterModel(Model):
             cand.cleanVotes()
         
         self.currentPoll = self.poll()
+        self.poll_lst.append(self.currentPoll)
         print(self.currentPoll)
         self.schedule.step()
         self.currentPollCounter += 1
