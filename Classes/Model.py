@@ -4,7 +4,6 @@ from mesa.time import RandomActivation
 from mesa.datacollection import DataCollector
 from mesa.batchrunner import BatchRunner
 
-
 from Classes.Person import Person, Voter, HonestVoter, StrategicVoter, Candidate
 
 def getCandidates(model):
@@ -38,26 +37,22 @@ class VoterModel(Model):
         self.loyalty = loyalty / 100
         self.poll_lst = []
 
-        # self.datacollector = DataCollector(model_reporters={"agent_count":
-        # lambda m: m.schedule.get_agent_count()},
-        # agent_reporters={"name": lambda a: a.name}) 
-
-        # Test of plurality voting
+        # Setup for the model
         self.candidates = []
-        for i in range(n_candidates): # Get some candidates
+        for i in range(n_candidates): # Generate the candidates
             c = Candidate(i,self,[width,height])
             self.candidates.append(c)
             self.space.place_agent(c,(c.position[0],c.position[1]))
             self.schedule.add(c)
         if voter_type == 'Strategic':
             print(voter_type)
-            for i in range(n_voters): # Get some voters
+            for i in range(n_voters): # Generate the strategic voters
                 a = StrategicVoter(n_candidates + i, self,[width,height])
                 self.voters.append(a)
                 self.schedule.add(a)
                 self.space.place_agent(a,(a.position[0],a.position[1]))
         else:
-            for i in range(n_voters): # Get some voters
+            for i in range(n_voters): # Generate the honest voters
                 a = HonestVoter(n_candidates + i, self,[width,height])
                 self.voters.append(a)
                 self.schedule.add(a)
@@ -75,7 +70,10 @@ class VoterModel(Model):
         
 
     def getAllVotes(self):
-        return [i.amountVotes for i in self.candidates]
+        total = 0
+        for i in self.candidates:
+            total += i.getVotes()
+        return total
         
     def poll(self):
         """
@@ -117,9 +115,6 @@ class VoterModel(Model):
 
     
     def step(self):
-        if self.currentPollCounter == self.maxpolls:
-            self.running = False
-            
         for cand in self.candidates:
             cand.cleanVotes()
         
@@ -130,4 +125,6 @@ class VoterModel(Model):
         self.currentPollCounter += 1
         self.datacollector.collect(self)
 
-
+        if self.currentPollCounter == self.maxpolls or self.voter_type == 'Honest':
+            # Finish the run when max polls is reached, or you're using honest voters(nothing will changes with more polls).
+            self.running = False
