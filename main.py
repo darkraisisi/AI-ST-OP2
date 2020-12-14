@@ -42,7 +42,7 @@ if __name__ == "__main__":
     }
 
     grid = SimpleCanvas(agent_portrayal, 500, 500) # 500, 500 canvas display size
-    chart = ChartModule([{"Label": "Total","Color": "Black"},{"Label": "cand0","Color": "Red"},{"Label": "cand1","Color": "Green"},{"Label": "cand2","Color": "Blue"},{"Label": "cand3","Color": "Yellow"}],
+    chart = ChartModule([{"Label": "cand0","Color": "Red"},{"Label": "cand1","Color": "Green"},{"Label": "cand2","Color": "Blue"},{"Label": "cand3","Color": "Yellow"}],
     data_collector_name='datacollector')
     
     server = ModularServer(VoterModel, [grid, chart], "Voter Model", model_params)
