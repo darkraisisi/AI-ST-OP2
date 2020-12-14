@@ -1,13 +1,13 @@
 from mesa.batchrunner import BatchRunner
-from Classes.Model import  VoterModel, getCandidates, getPoll, getPositionCandidate
+from Classes.Model import  VoterModel, getCandidates, getPoll
 from Classes.Person import Person, Voter, HonestVoter, StrategicVoter, Candidate
 import pickle
-def batch_run(nvoters, ncandidates,  iterations, max_nsteps):
-    
+
+def batch_run(nvoters, ncandidates, voter_type, iterations, max_nsteps):
     fixed_params = {
         "n_voters": nvoters, 
         "n_candidates": ncandidates,
-        "voter_type": "Strategic",
+        "voter_type": voter_type,
         "maxpolls":  6,
         'loyalty':30, 
         "width": 2,
@@ -22,7 +22,7 @@ def batch_run(nvoters, ncandidates,  iterations, max_nsteps):
         iterations,
         max_nsteps,
         model_reporters  = {"Votes":getCandidates, 
-                            "Polls":getPoll, }
+                            "Polls":getPoll}
     )
 
     batchrun.run_all()
@@ -30,19 +30,7 @@ def batch_run(nvoters, ncandidates,  iterations, max_nsteps):
     return dataCollection
     #TODO: get list of pollss for every run
 if __name__ == "__main__":
-    # Batch run 
-    data_br = batch_run(1000, 3, 2, 10)
-    pickle.dump(data_br, open("batch_run", "wb"))
-    # for i in data_br['Polls']:
-    #     print(i)
-    #     for j in i:
-    #         for cand in j:
-    #             print(cand.position)
-    
-                
-    
-    
-    # for run in data_br["Polls"]:
-    #     for cand in run:
-    #         print(run[cand]()) # execute function run[cand]
-    #     print("")
+    voter_type = "Strategic"
+    # Batch run
+    data_br = batch_run(1000, 3, voter_type, 10, 10)
+    pickle.dump(data_br,open(f'batch_run_{voter_type.lower()}_1','wb'))

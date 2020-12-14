@@ -82,7 +82,7 @@ class VoterModel(Model):
         """
         resultPoll  = {}
         if self.currentPollCounter == 0 or self.voter_type == 'Honest':# eerste poll
-            print('Poll: 1st, or just honest')
+            # print('Poll: 1st, or just honest')
             for cand in self.candidates:
                     resultPoll.update({cand: 0})
 
@@ -90,7 +90,10 @@ class VoterModel(Model):
                 voter = HonestVoter(i, self, [], i.position) # create aantal Honestvoters
                 distCand = voter.distanceCandidates(self.candidates)
                 chosenCandidate = voter.choseCandidate(distCand)
-
+                votes = resultPoll.get(chosenCandidate)
+                votes += 1
+                resultPoll.update({chosenCandidate: votes})
+                
             return resultPoll    
 
         else: # niet de eerste poll
@@ -120,7 +123,6 @@ class VoterModel(Model):
         
         self.currentPoll = self.poll()
         self.poll_lst.append(self.currentPoll)
-        print(self.currentPoll)
         self.schedule.step()
         self.currentPollCounter += 1
         self.datacollector.collect(self)
