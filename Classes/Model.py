@@ -17,6 +17,12 @@ def getCandidates(model):
 def getPoll(model):
     return model.poll_lst
 
+def getPositionCandidate(model):
+    """
+    Get the position of the candidates in the model
+    """
+
+    return [i.position for i in model.candidates]
    
 class VoterModel(Model):
     def __init__(self, n_voters, n_candidates, voter_type, maxpolls, loyalty, width, height):
