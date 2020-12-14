@@ -1,6 +1,7 @@
 from random import uniform
 from abc import ABC, abstractmethod
 import numpy as np
+import random
 from mesa import Agent, Model
 
 class Person(Agent):
@@ -117,13 +118,14 @@ class StrategicVoter(Voter):
         finalCandidate = distCand[0]
         runnerUp = distCand[1]
 
-        #now that we have the Candidate with highest chance of winning, we want to also consider the distance between voter and candidates.
-        if resultPoll.get(finalCandidate[0]) < resultPoll.get(runnerUp[0]):
-            diff = resultPoll.get(runnerUp[0]) - resultPoll.get(finalCandidate[0])
-            # print('diff',diff)
-            if diff / resultPoll.get(runnerUp[0]) > self.model.loyalty: 
-                #We vote for that candidate
-                finalCandidate = runnerUp
+        if random.randint(0,100) <= self.model.strat_chance and self.model.currentPollCounter != 0:
+            #now that we have the Candidate with highest chance of winning, we want to also consider the distance between voter and candidates.
+            if resultPoll.get(finalCandidate[0]) < resultPoll.get(runnerUp[0]):
+                diff = resultPoll.get(runnerUp[0]) - resultPoll.get(finalCandidate[0])
+                if diff / resultPoll.get(runnerUp[0]) > self.model.loyalty: 
+                    #We vote for that candidate
+                    self.model.strat_counter += 1
+                    finalCandidate = runnerUp
 
         self.color = finalCandidate[0].color
         return finalCandidate[0]

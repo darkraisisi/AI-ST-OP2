@@ -22,9 +22,13 @@ def getPositionCandidate(model):
     """
 
     return [i.position for i in model.candidates]
-   
+
+def getStratPerPollCounter(model):
+    return (model.strat_counter / model.maxpolls) / model.num_agents * 100
+
+
 class VoterModel(Model):
-    def __init__(self, n_voters, n_candidates, voter_type, maxpolls, loyalty, width, height):
+    def __init__(self, n_voters, n_candidates, voter_type, maxpolls, loyalty, strat_chance, width, height):
         self.voter_type = voter_type
         self.num_agents = n_voters
         self.space = ContinuousSpace(width, height, True)
@@ -35,7 +39,10 @@ class VoterModel(Model):
         self.currentPollCounter = 0
         self.currentPoll = None
         self.loyalty = loyalty / 100
+        self.strat_chance = strat_chance
         self.poll_lst = []
+
+        self.strat_counter = 0
 
         # Setup for the model
         self.candidates = []

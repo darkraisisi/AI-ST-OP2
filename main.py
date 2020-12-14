@@ -32,11 +32,12 @@ def agent_portrayal(agent):
 if __name__ == "__main__":
     size = 2
     model_params = {
-        "n_voters": UserSettableParameter( "slider", "Number of Voters (n)", 100, 2, 1000, 5, description="Choose how many agents to include in the model"),
+        "n_voters": UserSettableParameter( "slider", "Number of Voters (n)", 1000, 2, 1000, 5, description="Choose how many agents to include in the model"),
         "n_candidates": UserSettableParameter( "slider", "Number of Candidates (n)", 4, 2, 12, 1, description="Choose how many agents to include in the model"),
         "voter_type": UserSettableParameter( "choice", "Voter behavior", value="Strategic",choices=["Honest","Strategic"], description="Select the voter behavior you want (All honest/ strategic)"),
         "maxpolls": UserSettableParameter( "slider", "Amount of polls (n)", 4, 1, 12, 1, description="Choose how many agents to include in the model"),
-        'loyalty': UserSettableParameter( "slider", "Loyalty of a voter (%)", 30, 1, 100, 1, description="Choose the percentage more a second choice has got to have before a voter changes its vote"),
+        'loyalty': UserSettableParameter( "slider", "Loyalty of a voter (%)", 30, 1, 200, 1, description="Choose the percentage more a second choice has got to have before a voter changes its vote"),
+        'strat_chance': UserSettableParameter( "slider", "Chance a voter considders strategic voting", 30, 1, 100, 1, description="Choose the percentage more a second choice has got to have before a voter changes its vote"),
         "width": size,
         "height": size
     }
