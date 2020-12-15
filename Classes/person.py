@@ -1,7 +1,6 @@
 from random import uniform
 from abc import ABC, abstractmethod
 import numpy as np
-import random
 from mesa import Agent, Model
 
 class Person(Agent):
@@ -10,7 +9,7 @@ class Person(Agent):
     """
     def __init__(self, unique_id, model, limit, position=None):
         super().__init__(unique_id, model)
-        self.isCandidate = False
+        self.isCandidate = False # distinguish between a voter and a candidate
         self.color = None
 
         if type(position).__module__ == np.__name__:
@@ -21,6 +20,9 @@ class Person(Agent):
 
     
     def generatePosition(self, limit) -> [float, float]:
+        """
+        Generate random position(x,y) between 0 and 2 
+        """
         widthL, widthR, heightT, heightB = 0, limit[0], 0, limit[1]
         return np.array([uniform(widthL, widthR), uniform(heightB, heightT)])
 
@@ -35,7 +37,7 @@ class Candidate(Person):
         super().__init__(unique_id, model, limit, position)
         self.amountVotes = 0
         self.isCandidate = True
-        self.color = f"rgba({abs(127.5*self.position[0])},{127.5*self.position[1]},{(127.5*((self.position[0]) + self.position[1])/2)},1)"
+        self.color = f"rgba({abs(127.5*self.position[0])},{127.5*self.position[1]},{(127.5*((self.position[0]) + self.position[1])/2)},1)" # generate based on position 
 
 
     def addVotes(self, n:int) -> int:
@@ -78,6 +80,11 @@ class HonestVoter(Voter):
     
     @abstractmethod
     def choseCandidate(self,distCand:dict) -> Candidate:
+        """
+        Vote  for the candidate with the shortest distance
+         params:
+         distCand: distCand: dictionary that contains the distance between the voters and ccandidates
+        """
         finalCandidate = None
         smallestDistance = 100
 
@@ -113,19 +120,24 @@ class StrategicVoter(Voter):
         return distance
 
     @abstractmethod
-    def choseCandidate(self, distCand:dict, resultPoll:dict): #TODO define function in Model.py to get the result of a poll
-        distCand = sorted(distCand.items(), key=lambda x: x[1])
-        finalCandidate = distCand[0]
-        runnerUp = distCand[1]
-
-        if random.randint(0,100) <= self.model.strat_chance and self.model.currentPollCounter != 0:
-            #now that we have the Candidate with highest chance of winning, we want to also consider the distance between voter and candidates.
-            if resultPoll.get(finalCandidate[0]) < resultPoll.get(runnerUp[0]):
-                diff = resultPoll.get(runnerUp[0]) - resultPoll.get(finalCandidate[0])
-                if diff / resultPoll.get(runnerUp[0]) > self.model.loyalty: 
-                    #We vote for that candidate
-                    self.model.strat_counter += 1
-                    finalCandidate = runnerUp
+    def choseCandidate(self, distCand:dict, resultPoll:dict): 
+        """
+        params:
+        distCand: dictionary that contains the distance between the voters and ccandidates
+        resultPoll: the amount of Votes of each candidate of the previous poll
+        """
+        distCand = sorted(distCand.items(), key=lambda x: x[1]) # sort Candidates
+        finalCandidate = distCand[0] # the canndidate who the voter is goin to vote for. Initial value will be the candidate wih the shortest distance
+        runnerUp = distCand[1] 
+        
+        #Check whether finalCandidate has a better chance of winningg than runnerUp
+        # TODO :  This startegy will only be applied too two candidates. What happens to the rest?
+        if resultPoll.get(finalCandidate[0]) < resultPoll.get(runnerUp[0]):
+            diff = resultPoll.get(runnerUp[0]) - resultPoll.get(finalCandidate[0])
+            #Calculate how better of chance you have if you choose runner up
+            if diff / resultPoll.get(runnerUp[0]) > self.model.loyalty: 
+                #We vote for that candidate
+                finalCandidate = runnerUp
 
         self.color = finalCandidate[0].color
         return finalCandidate[0]
