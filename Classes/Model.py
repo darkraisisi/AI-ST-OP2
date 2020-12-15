@@ -52,7 +52,6 @@ class VoterModel(Model):
             self.space.place_agent(c,(c.position[0],c.position[1]))
             self.schedule.add(c)
         if voter_type == 'Strategic':
-            print(voter_type)
             for i in range(n_voters): # Generate the strategic voters
                 a = StrategicVoter(n_candidates + i, self,[width,height])
                 self.voters.append(a)
