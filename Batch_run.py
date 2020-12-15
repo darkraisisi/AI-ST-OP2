@@ -1,5 +1,5 @@
 from mesa.batchrunner import BatchRunnerMP, BatchRunner
-from Classes.Model import  VoterModel, getCandidates, getPoll, getStratPerPollCounter
+from Classes.Model import  VoterModel, getPoll, getStratPerPollCounter
 from Classes.Person import Person, Voter, HonestVoter, StrategicVoter, Candidate
 import pickle
 
@@ -11,22 +11,9 @@ def batch_run(fixed_params, variable_params, iterations, max_nsteps):
         fixed_params,
         iterations,
         max_nsteps,
-        model_reporters  = {"Votes":getCandidates, 
-                            "Polls":getPoll,
+        model_reporters  = {"Polls":getPoll,
                             "stratPerPollCounter":getStratPerPollCounter}
     )
-
-    # batchrun = BatchRunnerMP(
-    #     VoterModel,
-    #     nr_processes=None,
-    #     variable_parameters = variable_params,
-    #     fixed_parameters = fixed_params,
-    #     iterations = iterations,
-    #     max_steps = max_nsteps,
-    #     model_reporters  = {"Votes":getCandidates, 
-    #                         "Polls":getPoll,
-    #                         "stratPerPollCounter":getStratPerPollCounter}
-    # )
 
     batchrun.run_all()
     dataCollection = batchrun.get_model_vars_dataframe()  # Get DataFrame with collected data

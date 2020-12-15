@@ -63,23 +63,10 @@ class VoterModel(Model):
                 self.voters.append(a)
                 self.schedule.add(a)
                 self.space.place_agent(a,(a.position[0],a.position[1]))
-        
-        # md_rp = {}
-        # for i in range(len(self.candidates)):
-        #     md_rp.update({f"cand{i}": self.candidates[i].getVotes})
-
-        # md_rp.update({"Total": self.getAllVotes})
 
         self.datacollector  = DataCollector(
             model_reporters = getCandidates(self)
         )
-        
-
-    def getAllVotes(self):
-        total = 0
-        for i in self.candidates:
-            total += i.getVotes()
-        return total
         
     def poll(self):
         """
@@ -88,7 +75,6 @@ class VoterModel(Model):
         """
         resultPoll  = {}
         if self.currentPollCounter == 0 or self.voter_type == 'Honest':# eerste poll
-            # print('Poll: 1st, or just honest')
             for cand in self.candidates:
                     resultPoll.update({cand: 0})
 
@@ -103,13 +89,6 @@ class VoterModel(Model):
             return resultPoll    
 
         else: # niet de eerste poll
-            # print('Poll: n\'d',self.currentPollCounter+1)
-            # dist = [voter.distanceCandidates(self.candidates)  for  voter  in self.voters]
-            # map(Voter.choseCandidate(dist), self.voters)
-            # for cand in self.candidates:
-            #     resultPoll[cand] = cand.amountVotes
-
-            # return resultPoll
             for cand in self.candidates:
                     resultPoll.update({cand: 0})
 
