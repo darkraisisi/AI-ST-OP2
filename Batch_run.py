@@ -33,4 +33,4 @@ if __name__ == "__main__":
     }
     # Batch run
     data_br = batch_run(fixed_params, None, 1000, 10)
-    pickle.dump(data_br,open(f'batch_run_{voter_type.lower()}_2_14poll','wb'))
+    pickle.dump(data_br,open(f'generated_files/batch_run_{voter_type.lower()}_2_14poll','wb'))
