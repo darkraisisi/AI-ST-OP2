@@ -127,16 +127,23 @@ class StrategicVoter(Voter):
         distCand: dictionary that contains the distance between the voters and ccandidates
         resultPoll: the amount of Votes of each candidate of the previous poll
         """
+        # Sort the candidates by the amount of distance the are form this voter. 
         distCand = sorted(distCand.items(), key=lambda x: x[1])
-        finalCandidate = distCand[0]
-        runnerUp = distCand[1]
+        finalCandidate = distCand[0] # Select a favoriteCandidate based on distance.
+        runnerUp = distCand[1] # Select a second favoriteCandidate also based on distance.
 
+        # A Voter has a 1-100 chance of chosing to vote strategicaly, if the randomint is indeed lower or equal to the set chance,
+        # go further and evaluate the choices this agent has, it is not always wise to switch even if you consider voting strategicaly
         if random.randint(0,100) <= self.model.strat_chance and self.model.currentPollCounter != 0:
             #now that we have the Candidate with highest chance of winning, we want to also consider the distance between voter and candidates.
+            # Does the second Fav. actually have a better chance of winning?
             if resultPoll.get(finalCandidate[0]) < resultPoll.get(runnerUp[0]):
+                # If so, calculate the result difference.
                 diff = resultPoll.get(runnerUp[0]) - resultPoll.get(finalCandidate[0])
+                # Check if the difference in percentage is actually higher than a set & static 'loyalty' parameter.
                 if diff / resultPoll.get(runnerUp[0]) > self.model.loyalty: 
-                    #We vote for that candidate
+                    #We vote for the second candidate.
+                    # Keep track of the amount of time a voter actually switched it's vote, this is important for evaluation later as this (number / poll) / n_candidates should be similar to the real world 9% 
                     self.model.strat_counter += 1
                     finalCandidate = runnerUp
 
